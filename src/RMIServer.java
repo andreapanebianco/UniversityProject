@@ -12,7 +12,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServices {
     RMIPersonList person_list = new RMIPersonList();
 
     protected RMIServer() throws RemoteException {
-        // super(port: 1100);
+        super(7500);
     }
 
     public void Otherstuff() {
@@ -65,15 +65,15 @@ public class RMIServer extends UnicastRemoteObject implements RMIServices {
 
     public static void main(String args[]) {
         try {
-            RMIServices services = new RMIServer();
             // per i testi locali
             // Naming.rebind("listserver",services);
 
             System.setProperty("java.rmi.server.hostname","whitelodge.ns0.it");
             Registry registry= LocateRegistry.getRegistry();
-            registry.rebind("rmiservices",services);
+            RMIServices services = new RMIServer();
+            registry.bind("rmiservices",services);
 
-        } catch (RemoteException e) {
+        } catch (RemoteException | AlreadyBoundException e) {
             e.printStackTrace();
         }
     }
