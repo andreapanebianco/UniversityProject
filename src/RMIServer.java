@@ -68,6 +68,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServices {
             // per i testi locali
             // Naming.rebind("listserver",services);
 
+            /*
+            Poichè andiamo ad inserire dei parametri specifici riguardanti il funzionamento del server, andiamo prima a
+            definirli ed in seguito facciamo nascere il server assegnandolo all'interfaccia di tipo  services facendo sì
+            che possa nascere rispettando i parametri imposti piuttosto che di default.
+             */
+
             System.setProperty("java.rmi.server.hostname","whitelodge.ns0.it");
             Registry registry= LocateRegistry.getRegistry();
             RMIServices services = new RMIServer();
