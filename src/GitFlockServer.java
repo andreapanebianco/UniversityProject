@@ -1,14 +1,16 @@
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
 
-public class MyServer {
+public class GitFlockServer {
 
     ServerSocket socket;
     Socket client_socket;
     private int port;
+
+    int client_id = 0;
+
+    UsersList list = new UsersList();
 
     public static void main(String args[]) {
 
@@ -17,11 +19,11 @@ public class MyServer {
             return;
         }
 
-        MyServer server = new MyServer(Integer.parseInt(args[0]));
+        GitFlockServer server = new GitFlockServer(Integer.parseInt(args[0]));
         server.start();
     }
 
-    public MyServer(int port) {
+    public GitFlockServer(int port) {
         // we could also put port value checks here...
         System.out.println("Initializing server with port "+port);
         this.port = port;
@@ -37,24 +39,10 @@ public class MyServer {
                 client_socket = socket.accept();
                 System.out.println("Accepted connection from " + client_socket.getRemoteSocketAddress());
 
-                Scanner client_scanner = new Scanner(client_socket.getInputStream());
-                PrintWriter pw = new PrintWriter(client_socket.getOutputStream());
-
-                boolean go = true;
-                while (go) {
-                    String message = client_scanner.nextLine();
-                    System.out.println("Server: Received "+message);
-
-                    String message_big = message.toUpperCase();
-                    System.out.println("Server: Sending "+message_big+" to "+client_socket.getRemoteSocketAddress());
-                    pw.println(message_big);
-                    pw.flush(); // DO NOT FORGET!
-                    if (message.equals("QUIT")) {
-                        System.out.println("Server: Closing connection to "+client_socket.getRemoteSocketAddress());
-                        client_socket.close();
-                        go = false;
-                    }
-                }
+                GitFlockClientManager cm = new GitFlockClientManager(client_socket,list);
+                Thread t = new Thread(cm,"client_"+client_id);
+                client_id++;
+                t.start();
             }
 
         } catch (IOException e) {
