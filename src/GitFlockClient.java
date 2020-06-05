@@ -87,13 +87,14 @@ public class GitFlockClient {
                             System.out.println("Error adding person!!!");
                         }
                         else {
-                            System.out.println("ERROR: unkown message->"+msg_received);
+                            System.out.println("ERROR: unkown message -> "+msg_received);
                         }
 
                         boolean connect = true;
                         while (connect) {
-                            System.out.println("1 - Start a chat");
-                            System.out.println("2 - Back to previous menu");
+                            System.out.println("1 - See who's online");
+                            System.out.println("2 - Start a chat with someone");
+                            System.out.println("3 - Back to previous menu");
                             System.out.print("Enter choice -> ");
                             choice2 = user_scanner.nextInt();
                             switch (choice2) {
@@ -104,7 +105,7 @@ public class GitFlockClient {
                                     msg_received = server_scanner.nextLine();
                                     boolean listing = true;
                                     if (msg_received.equals("BEGIN")) {
-                                        System.out.println("Receiving list....");
+                                        System.out.println("Receiving list...");
                                         while (listing) {
                                             msg_received = server_scanner.nextLine();
                                             if (msg_received.equals("END")) {
@@ -120,6 +121,13 @@ public class GitFlockClient {
                                     }
                                     break;
                                 case 2:
+                                    System.out.println("Enter a username to chat with: ");
+                                    String mate = user_scanner.next();
+                                    msg_to_send = "CHAT " + mate;
+                                    pw.println(msg_to_send);
+                                    pw.flush();
+                                    break;
+                                case 3:
                                     msg_to_send = "REMOVE " + username;
                                     pw.println(msg_to_send);
                                     pw.flush();

@@ -3,13 +3,13 @@ import java.util.Date;
 import java.util.Iterator;
 
 public class UsersList {
-    public Iterator<User> iterator;
+    public Iterator <User> iterator;
     // wrapping an arraylist into a custom class
     // (1) manage and syncronize access to list
     // (2) add other meta-data (creation, modification date)
 
-    String archive_id;
-    String last_modification;
+    //String archive_id;
+    //String last_modification;
     private ArrayList<User> list;
     public UsersList() {
         list = new ArrayList<User>();
@@ -17,12 +17,12 @@ public class UsersList {
 
     // could also return a boolean to check the validity...
     public synchronized void add(User p) {
-        last_modification = new Date().toString();
+        //last_modification = new Date().toString();
         list.add(p);
     }
 
     public synchronized void remove(User p) {
-        last_modification = new Date().toString();
+       // last_modification = new Date().toString();
         list.remove(p);
     }
 
@@ -45,7 +45,7 @@ public class UsersList {
     public String toString() {
         String s;
         s = "BEGIN_LIST";
-        s = s+" MOD_DATE: "+last_modification;
+        //s = s+" MOD_DATE: "+last_modification;
         for (User p : list) {
             s = s+" NAME: "+p.getName();
             s = s+" SURNAME: "+p.getSurname();

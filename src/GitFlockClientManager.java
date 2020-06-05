@@ -3,9 +3,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Scanner;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class GitFlockClientManager implements Runnable {
 
@@ -21,7 +20,9 @@ public class GitFlockClientManager implements Runnable {
     public void run() {
         String tid = Thread.currentThread().getName();
         System.out.println(tid+"-> Accepted connection from " + client_socket.getRemoteSocketAddress());
-
+        //HashMap<String, User> userHashMap = new HashMap<>();
+        //Map<String, User> userHashMap = Collections.synchronizedMap(new HashMap<>());
+        ConcurrentHashMap<String, User> userHashMap = new ConcurrentHashMap<>();
         Scanner client_scanner = null;
         PrintWriter pw = null;
         try {
@@ -36,7 +37,6 @@ public class GitFlockClientManager implements Runnable {
             String message = client_scanner.nextLine();
             System.out.println("Server Received: "+message);
             Scanner msg_scanner = new Scanner(message);
-
             String cmd = msg_scanner.next();
             System.out.println("Received command:"+cmd);
             User p = new User();
@@ -50,6 +50,13 @@ public class GitFlockClientManager implements Runnable {
                 p.setSurname(surname);
                 p.setUsername(username);
                 list.add(p);
+                synchronized (userHashMap) {
+                    userHashMap.put(username, p);
+                    if (userHashMap.containsKey(username)) {
+                        System.out.println("User put in hashmap");
+                        System.out.println(username.hashCode());
+                    } else System.out.println("Oh cazzo");
+                }
                 System.out.println("SERVER LOG:Added "+p);
                 // we always return OK, but in a more complex
                 // scenario, e.g., age>18, etc... an ADD_ERROR
@@ -60,14 +67,19 @@ public class GitFlockClientManager implements Runnable {
             else if (cmd.equals("REMOVE")){
                 System.out.println("Executing command REMOVE");
                 String username = msg_scanner.next();
-                System.out.println("Username to remove: "+username);
+                System.out.println("Username to remove: " +username);
+                userHashMap.remove(username);
+                /*
                 Iterator <User> iterator = list.iterator;
                 while (iterator.hasNext()) {
+                    System.out.println("Current username: "+iterator.next().getUsername());
                     if (iterator.next().getUsername().equals(username)) {
                         iterator.remove();
                     }
                 }
                 // list.remove(p);
+
+                 */
             }
             else if (cmd.equals("LIST")) {
                 pw.println("BEGIN");
@@ -81,6 +93,7 @@ public class GitFlockClientManager implements Runnable {
                     pw.flush();
                 }
                 */
+
                 tmp = list.getListCopy();
                 for (User u: tmp) {
                     pw.println(u);
@@ -90,22 +103,17 @@ public class GitFlockClientManager implements Runnable {
                 pw.println("END");
                 pw.flush();
             }
-            else if (cmd.equals("SAVE")) {
-                try {
-                    var oos = new ObjectOutputStream(new FileOutputStream("x.ser"));
-                    oos.writeObject(list);
-                    oos.close();
-                    pw.println("SAVE_OK");
-                    pw.flush();
-                    System.out.println("SERVER LOG: list saved correctly");
 
-                } catch (IOException e) {
-                    pw.println("SAVE_ERROR");
-                    pw.flush();
-                    e.printStackTrace();
+            else if (cmd.equals("CHAT")) {
+                String username = msg_scanner.next();
+                System.out.println(username.hashCode());
+                synchronized (userHashMap) {
+                    if (userHashMap.containsKey(username)) {
+                        System.out.println("User exists!!");
+                    } else System.out.println("User " + username + " doesn't exist.");
                 }
-
             }
+
             else if (cmd.equals("QUIT")) {
                 System.out.println("Server: Closing connection to "+client_socket.getRemoteSocketAddress());
                 try {
