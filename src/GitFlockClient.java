@@ -11,27 +11,26 @@ public class GitFlockClient {
 
     public static void main(String args[]) {
 
-        if (args.length!=3)  {
-            System.out.println("Usage: java GitFlockClient <username> <address> <port>");
+        if (args.length!=2)  {
+            System.out.println("Usage: java GitFlockClient <address> <port>");
             return;
         }
 
-        GitFlockClient client = new GitFlockClient(args[0], args[1], Integer.parseInt(args[2]));
+        GitFlockClient client = new GitFlockClient(args[0], Integer.parseInt(args[1]));
         client.start();
     }
 
-    public GitFlockClient(String username, String address, int port) {
+    public GitFlockClient(String address, int port) {
         this.address = address;
         this.port = port;
-        this.username = username;
     }
 
     public void start() {
-        System.out.println("Starting Client connection to "+address+": "+port+ "with username: " +username);
+        System.out.println("Starting Client connection to "+address+": "+port);
 
         try {
             socket = new Socket(address,port);
-            System.out.println("Started Client connection to " +address+ ": " +port+ "with username: " +username);
+            System.out.println("Started Client connection to " +address+ ": " +port);
 
             // to server
             PrintWriter pw = new PrintWriter(socket.getOutputStream());
@@ -50,21 +49,22 @@ public class GitFlockClient {
 
                 System.out.println("********** Welcome to GitFlock, the java-based social network **********");
                 System.out.println("1 - Register user");
-                // System.out.println("2 - List all");
                 System.out.println("2 - About GitFlock");
                 System.out.println("3 - Quit");
-                System.out.println("-------------------------------");
+                System.out.println("************************************************************************");
                 System.out.print("Enter choice -> ");
                 choice1 = user_scanner.nextInt();
 
                 switch (choice1) {
                     case 1:
-                        System.out.print("Insert name:");
+                        System.out.print("Insert name:\n");
                         String name = user_scanner.next();
-                        System.out.print("Insert surname:");
+                        System.out.print("Insert surname:\n");
                         String surname = user_scanner.next();
                         System.out.println("Insert age:");
                         int age = user_scanner.nextInt();
+                        System.out.print("Insert username:\n");
+                        String username = user_scanner.next();
                         if(age < 14) {
                             System.out.println("We're sorry, you're too young to use this application.");
                             break;
@@ -75,7 +75,6 @@ public class GitFlockClient {
                         }
 
                         msg_to_send = "ADD "+name+" "+surname+" "+age+ " " +username;
-                        System.out.println("DEBUG: Sending "+msg_to_send);
                         pw.println(msg_to_send);
                         pw.flush();
 
@@ -84,10 +83,10 @@ public class GitFlockClient {
                             System.out.println("Person added correctly!");
                         }
                         else if (msg_received.equals("ADD_ERROR")) {
-                            System.out.println("Error adding person!!!");
+                            System.out.println("Error adding person!");
                         }
                         else {
-                            System.out.println("ERROR: unkown message -> "+msg_received);
+                            System.out.println("ERROR: unknown message -> "+msg_received);
                         }
 
                         boolean connect = true;
@@ -110,7 +109,7 @@ public class GitFlockClient {
                                             msg_received = server_scanner.nextLine();
                                             if (msg_received.equals("END")) {
                                                 listing = false;
-                                                System.out.println("List ended");
+                                                System.out.println("************************************************************************");
                                             } else {
                                                 System.out.println(msg_received);
                                             }
@@ -123,12 +122,18 @@ public class GitFlockClient {
                                 case 2:
                                     System.out.println("Enter a username to chat with: ");
                                     String mate = user_scanner.next();
-                                    msg_to_send = "CHAT " + mate;
+                                    msg_to_send = "CHAT "+mate;
                                     pw.println(msg_to_send);
                                     pw.flush();
+                                    msg_received = server_scanner.nextLine();
+                                    if (msg_received.equals("SUCCESS")) {
+                                        System.out.println("Contact established with user "+mate);
+                                    } else if (msg_received.equals("FAILURE")) {
+                                        System.out.println("User not available");
+                                    }
                                     break;
                                 case 3:
-                                    msg_to_send = "REMOVE " + username;
+                                    msg_to_send = "REMOVE "+username;
                                     pw.println(msg_to_send);
                                     pw.flush();
                                     System.out.println("Going offline...");

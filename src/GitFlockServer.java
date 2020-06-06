@@ -1,16 +1,17 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class GitFlockServer {
 
     ServerSocket socket;
     Socket client_socket;
     private int port;
+    ConcurrentHashMap<String, User> Users = new ConcurrentHashMap<String, User>();
 
     int client_id = 0;
-
-    UsersList list = new UsersList();
 
     public static void main(String args[]) {
 
@@ -24,7 +25,6 @@ public class GitFlockServer {
     }
 
     public GitFlockServer(int port) {
-        // we could also put port value checks here...
         System.out.println("Initializing server with port "+port);
         this.port = port;
     }
@@ -39,7 +39,7 @@ public class GitFlockServer {
                 client_socket = socket.accept();
                 System.out.println("Accepted connection from " + client_socket.getRemoteSocketAddress());
 
-                GitFlockClientManager cm = new GitFlockClientManager(client_socket,list);
+                GitFlockClientManager cm = new GitFlockClientManager(client_socket, Users);
                 Thread t = new Thread(cm,"client_"+client_id);
                 client_id++;
                 t.start();
@@ -51,6 +51,4 @@ public class GitFlockServer {
         }
 
     }
-
-
 }
