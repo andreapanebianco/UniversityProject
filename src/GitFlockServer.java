@@ -35,9 +35,9 @@ public class GitFlockServer {
             socket = new ServerSocket(port);
             System.out.println("Started server on port "+port);
             while (true) {
-                System.out.println("Listening on port " + port);
+                System.out.println("Listening on port "+port);
                 client_socket = socket.accept();
-                System.out.println("Accepted connection from " + client_socket.getRemoteSocketAddress());
+                System.out.println("Accepted connection from "+client_socket.getRemoteSocketAddress());
 
                 GitFlockClientManager cm = new GitFlockClientManager(client_socket, Users);
                 Thread t = new Thread(cm,"client_"+client_id);

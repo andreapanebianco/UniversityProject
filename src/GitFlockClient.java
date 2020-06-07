@@ -66,11 +66,11 @@ public class GitFlockClient {
                         System.out.print("Insert username:\n");
                         String username = user_scanner.next();
                         if(age < 14) {
-                            System.out.println("We're sorry, you're too young to use this application.");
+                            System.out.println("We're sorry, you're too young to use this application");
                             break;
                         }
                         else if (age > 65) {
-                            System.out.println("We're sorry, it's too late for you to use this application.");
+                            System.out.println("We're sorry, it's too late for you to use this application");
                             break;
                         }
 
