@@ -1,4 +1,5 @@
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class User implements Serializable {
 
@@ -6,6 +7,7 @@ public class User implements Serializable {
     private String surname;
     private int age;
     private String username;
+    public ArrayList<String> msglog = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -39,8 +41,12 @@ public class User implements Serializable {
         this.username = username;
     }
 
+    public void addmsg(String msg){
+        msglog.add(msg);
+    }
+
     @Override
     public String toString() {
-        return username+" ("+name+" "+surname+", "+age+")";
+        return username+"("+name+" "+surname+", "+age+")";
     }
 }

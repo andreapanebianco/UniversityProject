@@ -66,11 +66,11 @@ public class GitFlockClient {
                         System.out.print("Insert username:\n");
                         String username = user_scanner.next();
                         if(age < 14) {
-                            System.out.println("We're sorry, you're too young to use this application");
+                            System.out.println("We're sorry, you're too young to use this application.");
                             break;
                         }
                         else if (age > 65) {
-                            System.out.println("We're sorry, it's too late for you to use this application");
+                            System.out.println("We're sorry, it's too late for you to use this application.");
                             break;
                         }
 
@@ -120,20 +120,56 @@ public class GitFlockClient {
                                     }
                                     break;
                                 case 2:
+                                    msg_to_send = "CHAT";
+                                    pw.println(msg_to_send);
+                                    pw.flush();
+                                    msg_received = server_scanner.nextLine();
+                                    boolean loglisting = true;
+                                    if (msg_received.equals("LOGBEGIN")) {
+                                        System.out.println("Receiving chat log...");
+                                        while (loglisting) {
+                                            msg_received = server_scanner.nextLine();
+                                            if (msg_received.equals("LOGEND")) {
+                                                loglisting = false;
+                                                System.out.println("************************************************************************");
+                                            } else {
+                                                System.out.println(msg_received);
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        System.out.println("Unknown Response: "+msg_received);
+                                    }
                                     System.out.println("Enter a username to chat with: ");
                                     String mate = user_scanner.next();
-                                    msg_to_send = "CHAT "+mate;
+                                    if (mate.equals("QUIT")) break;
+                                    user_scanner.nextLine();
+                                    msg_to_send = "CHATWITH "+mate;
                                     pw.println(msg_to_send);
                                     pw.flush();
                                     msg_received = server_scanner.nextLine();
                                     if (msg_received.equals("SUCCESS")) {
                                         System.out.println("Contact established with user "+mate);
+                                        boolean talk = true;
+                                        String msg = null;
+                                        while(talk) {
+                                            System.out.println("Type your message:");
+                                            msg = user_scanner.nextLine();
+                                            if (msg.equals("QUIT")) {
+                                                talk = false;
+                                                break;
+                                            }
+                                            msg_to_send = "MSG "+msg;
+                                            pw.println(msg_to_send);
+                                            pw.flush();
+                                        }
+                                        break;
                                     } else if (msg_received.equals("FAILURE")) {
                                         System.out.println("User not available");
                                     }
                                     break;
                                 case 3:
-                                    msg_to_send = "REMOVE "+username;
+                                    msg_to_send = "REMOVE";
                                     pw.println(msg_to_send);
                                     pw.flush();
                                     System.out.println("Going offline...");

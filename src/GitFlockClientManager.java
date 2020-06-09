@@ -1,9 +1,10 @@
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class GitFlockClientManager implements Runnable {
@@ -16,12 +17,22 @@ public class GitFlockClientManager implements Runnable {
         this.users = users;
     }
 
+    public ArrayList<String> getListCopy(ArrayList<String> list) {
+        ArrayList<String> a_list = new ArrayList<>();
+        a_list.addAll(list);
+        return a_list;
+    }
+
     @Override
     public void run() {
         String tid = Thread.currentThread().getName();
         System.out.println(tid+" -> Accepted connection from " + client_socket.getRemoteSocketAddress());
         Scanner client_scanner = null;
         PrintWriter pw = null;
+        String mate = null;
+        String username = null;
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM HH:mm");
         try {
             client_scanner = new Scanner(client_socket.getInputStream());
             pw = new PrintWriter(client_socket.getOutputStream());
@@ -41,7 +52,7 @@ public class GitFlockClientManager implements Runnable {
                 String name = msg_scanner.next();
                 String surname = msg_scanner.next();
                 int age = msg_scanner.nextInt();
-                String username = msg_scanner.next();
+                username = msg_scanner.next();
                 p.setName(name);
                 p.setAge(age);
                 p.setSurname(surname);
@@ -53,7 +64,7 @@ public class GitFlockClientManager implements Runnable {
             }
             else if (cmd.equals("REMOVE")){
                 System.out.println("Executing command REMOVE");
-                String username = msg_scanner.next();
+                //username = msg_scanner.next();
                 System.out.println("Username to remove: " +username);
                 users.remove(username);
             }
@@ -67,11 +78,22 @@ public class GitFlockClientManager implements Runnable {
                 pw.println("END");
                 pw.flush();
             }
-
             else if (cmd.equals("CHAT")) {
-                String username = msg_scanner.next();
+                pw.println("LOGBEGIN");
+                pw.flush();
+                ArrayList<String> tmp;
+                tmp= getListCopy(this.users.get(username).msglog);
+                for (String m: tmp) {
+                    pw.println(m);
+                    pw.flush();
+                }
+                pw.println("LOGEND");
+                pw.flush();
+            }
+            else if (cmd.equals("CHATWITH")) {
+                mate = msg_scanner.next();
                 synchronized (users) {
-                    if (this.users.containsKey(username)) {
+                    if (this.users.containsKey(mate)) {
                         pw.println("SUCCESS");
                         pw.flush();
                     } else {
@@ -80,7 +102,12 @@ public class GitFlockClientManager implements Runnable {
                     }
                 }
             }
-
+            else if (cmd.equals("MSG")) {
+                synchronized (users) {
+                    String msg = msg_scanner.nextLine();
+                    this.users.get(mate).addmsg("["+formatter.format(date)+"] "+username+": "+msg);
+                }
+            }
             else if (cmd.equals("QUIT")) {
                 System.out.println("Server: Closing connection to "+client_socket.getRemoteSocketAddress());
                 try {
