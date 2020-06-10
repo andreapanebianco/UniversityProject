@@ -4,10 +4,14 @@ import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class GitFlockServer {
-
+    /*
+    Nel server sono inizializzate le variabili di socket, client-socket, porta di connessione e l'hashmap comune a tutti
+    gli utenti dell'applicazione. La suddetta hashmap sarà fornita ad ognuno degli utenti tramite rispettivo CM.
+     */
     ServerSocket socket;
     Socket client_socket;
     private int port;
+    // La ConcurrentHashMap è definita per avere come key una stringa (lo username dell'utente).
     ConcurrentHashMap<String, User> Users = new ConcurrentHashMap<String, User>();
 
     int client_id = 0;
@@ -37,7 +41,7 @@ public class GitFlockServer {
                 System.out.println("Listening on port " + port);
                 client_socket = socket.accept();
                 System.out.println("Accepted connection from " + client_socket.getRemoteSocketAddress());
-
+                // Viene creato il CM, fornendo al costruttore il socket e l'hashmap.
                 GitFlockClientManager cm = new GitFlockClientManager(client_socket, Users);
                 Thread t = new Thread(cm,"client_"+client_id);
                 client_id++;
