@@ -84,7 +84,7 @@ public class GitFlockClientManager implements Runnable {
                 p.setSurname(surname);
                 p.setUsername(username);
                 users.put(username, p);
-                System.out.println("SERVER LOG: Added "+p);
+                System.out.println("SERVER LOG: Added " + p);
                 pw.println("ADD_OK");
                 pw.flush();
             }

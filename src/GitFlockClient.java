@@ -97,9 +97,6 @@ public class GitFlockClient {
                         if (msg_received.equals("ADD_OK")) {
                             System.out.println("Person added correctly!");
                         }
-                        else if (msg_received.equals("ADD_ERROR")) {
-                            System.out.println("Error adding person!");
-                        }
                         else {
                             System.out.println("ERROR: unknown message -> "+msg_received);
                         }
