@@ -62,10 +62,19 @@ public class GitFlockClient {
             int choice1,choice2;
 
             while (go) {
+                System.out.println("************************************************************************");
+                System.out.println("   ______   __   ______  ______  __       ______   ______   __  __    ");
+                System.out.println("  /\\  ___\\ /\\ \\ /\\__  _\\/\\  ___\\/\\ \\     /\\  __ \\ /\\  ___\\ /\\ \\/ /    ");
+                System.out.println("  \\ \\ \\__ \\\\ \\ \\\\/_/\\ \\/\\ \\  __\\\\ \\ \\____\\ \\ \\/\\ \\\\ \\ \\____\\ \\  _\"-.  ");
+                System.out.println("   \\ \\_____\\\\ \\_\\  \\ \\_\\ \\ \\_\\   \\ \\_____\\\\ \\_____\\\\ \\_____\\\\ \\_\\ \\_\\ ");
+                System.out.println("    \\/_____/ \\/_/   \\/_/  \\/_/    \\/_____/ \\/_____/ \\/_____/ \\/_/\\/_/ ");
+                System.out.println("");
                 System.out.println("********** Welcome to GitFlock, the java-based social network **********");
+                System.out.println("");
                 System.out.println("1 - Register user");
                 System.out.println("2 - About GitFlock");
                 System.out.println("3 - Quit");
+                System.out.println("");
                 System.out.println("************************************************************************");
                 System.out.print("Enter choice -> ");
                 choice1 = user_scanner.nextInt();
@@ -231,6 +240,12 @@ public class GitFlockClient {
                         }
                         break;
                     case 2:
+                        System.out.println("   ______   __   ______  ______  __       ______   ______   __  __    ");
+                        System.out.println("  /\\  ___\\ /\\ \\ /\\__  _\\/\\  ___\\/\\ \\     /\\  __ \\ /\\  ___\\ /\\ \\/ /    ");
+                        System.out.println("  \\ \\ \\__ \\\\ \\ \\\\/_/\\ \\/\\ \\  __\\\\ \\ \\____\\ \\ \\/\\ \\\\ \\ \\____\\ \\  _\"-.  ");
+                        System.out.println("   \\ \\_____\\\\ \\_\\  \\ \\_\\ \\ \\_\\   \\ \\_____\\\\ \\_____\\\\ \\_____\\\\ \\_\\ \\_\\ ");
+                        System.out.println("    \\/_____/ \\/_/   \\/_/  \\/_/    \\/_____/ \\/_____/ \\/_____/ \\/_/\\/_/ ");
+                        System.out.println("");
                         System.out.println("GitFlock - the java-based social network");
                         System.out.println("Chat with old and new friends using the complete list of online users; check who's messaged you and answer with as many messages as you want!");
                         System.out.println("You'll always be able to tell when a message was sent to you, and who sent it!");
