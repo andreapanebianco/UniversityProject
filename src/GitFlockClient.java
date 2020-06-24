@@ -27,7 +27,7 @@ public class GitFlockClient {
         client.start();
     }
 
-    //I valori appena inseriti vengono associati al client da servire
+    //I valori appena inseriti vengono associati al client da servire.
 
     public GitFlockClient(String address1, int port1, String address2, int port2) {
         this.address1 = address1;
