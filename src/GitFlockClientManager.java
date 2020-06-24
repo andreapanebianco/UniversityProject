@@ -15,14 +15,14 @@ protocollari che precedono ciascun messaggio inviato dall'utente (ed inviandone 
 public class GitFlockClientManager implements Runnable {
 
     private Socket client_socket;
-    private Socket outsocket;
+    //private Socket outsocket;
     private ConcurrentHashMap<String, User> users;
     /*
     Implementando Runnable, il CM è implementato come un thread. Data la natura della ConcurrentHashmap, locata nel server,
     essa è inserita nel costruttore in maniera tale da consentirne la consultazione e la modifica.
      */
-    public GitFlockClientManager(Socket myclient, Socket out_socket, ConcurrentHashMap<String, User> users) {
-        outsocket = out_socket;
+    public GitFlockClientManager(Socket myclient, ConcurrentHashMap<String, User> users) {
+        //outsocket = out_socket;
         client_socket = myclient;
         this.users = users;
     }
@@ -44,7 +44,7 @@ public class GitFlockClientManager implements Runnable {
         // Vengono inizializzati uno scanner ed un printwriter, destinati alla comunicazione protocollare.
         Scanner client_scanner = null;
         PrintWriter pw = null;
-        PrintWriter opw = null;
+        //PrintWriter opw = null;
         String mate = null;
         String username = null;
         // Viene inizializzata una variabile data, con successivo formato leggibile, abbinata al messaggio in fase di archiviazione.
@@ -59,7 +59,7 @@ public class GitFlockClientManager implements Runnable {
             // Vengono associati getInputStream e getOutputStream per la lettura e la scrittura dei messaggi protocollari.
             client_scanner = new Scanner(client_socket.getInputStream());
             pw = new PrintWriter(client_socket.getOutputStream());
-            opw = new PrintWriter(outsocket.getOutputStream());
+            //opw = new PrintWriter(outsocket.getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -156,11 +156,15 @@ public class GitFlockClientManager implements Runnable {
                     if (this.users.containsKey(mate)) {
                         pw.println("SUCCESS");
                         pw.flush();
-                    } else opw.println("CHATWITH "+mate);
+                    }
+                    /*
+                    else opw.println("CHATWITH "+mate);
                         if (cmd.equals("SUCCESS")) {
                             pw.println("SUCCESS");
                             pw.flush();
-                        } else {
+                        }
+                        */
+                        else {
                             pw.println("FAILURE");
                             pw.flush();
                         }

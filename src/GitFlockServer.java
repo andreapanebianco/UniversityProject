@@ -9,9 +9,9 @@ public class GitFlockServer {
     gli utenti dell'applicazione. La suddetta hashmap sarà fornita ad ognuno degli utenti tramite rispettivo CM.
      */
     ServerSocket socket;
-    ServerSocket outsocket;
+    //ServerSocket outsocket;
     Socket client_socket;
-    Socket out_socket;
+    //Socket out_socket;
     private int port;
     // La ConcurrentHashMap è definita per avere come key una stringa (lo username dell'utente).
     ConcurrentHashMap<String, User> Users = new ConcurrentHashMap<String, User>();
@@ -38,18 +38,20 @@ public class GitFlockServer {
         try {
             System.out.println("Starting server on port "+port);
             socket = new ServerSocket(port);
+            /*
             if (port == 7500){
                 outsocket = new ServerSocket(1109);
             } else outsocket = new ServerSocket(7500);
+             */
             System.out.println("Started server on port "+port);
             while (true) {
                 System.out.println("Listening on port " + port);
                 client_socket = socket.accept();
-                out_socket = outsocket.accept();
+                //out_socket = outsocket.accept();
                 System.out.println("Accepted connection from " + client_socket.getRemoteSocketAddress());
-                System.out.println("Accepted remote connection from " + out_socket.getRemoteSocketAddress());
+                //System.out.println("Accepted remote connection from " + out_socket.getRemoteSocketAddress());
                 // Viene creato il CM, fornendo al costruttore il socket e l'hashmap.
-                GitFlockClientManager cm = new GitFlockClientManager(client_socket, out_socket, Users);
+                GitFlockClientManager cm = new GitFlockClientManager(client_socket, Users);
                 Thread t = new Thread(cm,"client_"+client_id);
                 client_id++;
                 t.start();
