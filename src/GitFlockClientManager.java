@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,14 +16,12 @@ protocollari che precedono ciascun messaggio inviato dall'utente (ed inviandone 
 public class GitFlockClientManager implements Runnable {
 
     private Socket client_socket;
-    //private Socket outsocket;
     private ConcurrentHashMap<String, User> users;
     /*
     Implementando Runnable, il CM è implementato come un thread. Data la natura della ConcurrentHashmap, locata nel server,
     essa è inserita nel costruttore in maniera tale da consentirne la consultazione e la modifica.
      */
     public GitFlockClientManager(Socket myclient, ConcurrentHashMap<String, User> users) {
-        //outsocket = out_socket;
         client_socket = myclient;
         this.users = users;
     }
@@ -44,9 +43,10 @@ public class GitFlockClientManager implements Runnable {
         // Vengono inizializzati uno scanner ed un printwriter, destinati alla comunicazione protocollare.
         Scanner client_scanner = null;
         PrintWriter pw = null;
-        //PrintWriter opw = null;
+        PrintWriter opw = null;
         String mate = null;
         String username = null;
+        String s=null;
         // Viene inizializzata una variabile data, con successivo formato leggibile, abbinata al messaggio in fase di archiviazione.
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM HH:mm");
@@ -59,7 +59,6 @@ public class GitFlockClientManager implements Runnable {
             // Vengono associati getInputStream e getOutputStream per la lettura e la scrittura dei messaggi protocollari.
             client_scanner = new Scanner(client_socket.getInputStream());
             pw = new PrintWriter(client_socket.getOutputStream());
-            //opw = new PrintWriter(outsocket.getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -88,6 +87,29 @@ public class GitFlockClientManager implements Runnable {
                 p.setSurname(surname);
                 p.setUsername(username);
                 users.put(username, p);
+                File file = new File("hashmap.txt");
+                ArrayList<String> database = new ArrayList<>();
+                if(file.exists()) {
+                    Scanner myReader = null;
+                    try {
+                        myReader = new Scanner(file);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    while (myReader.hasNextLine()) {
+                        database.add(myReader.nextLine());
+                    }
+                }
+                database.add(username+" "+client_socket.getLocalPort()+" "+client_socket.getLocalAddress().getHostAddress());
+                try {
+                    FileWriter fileWriter = new FileWriter(file);
+                    for (String string:database) {
+                        fileWriter.write(string+"\n");
+                    }
+                        fileWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 System.out.println("SERVER LOG: Added " + p);
                 pw.println("ADD_OK");
                 pw.flush();
@@ -156,17 +178,31 @@ public class GitFlockClientManager implements Runnable {
                     if (this.users.containsKey(mate)) {
                         pw.println("SUCCESS");
                         pw.flush();
-                    }
-                    /*
-                    else opw.println("CHATWITH "+mate);
-                        if (cmd.equals("SUCCESS")) {
-                            pw.println("SUCCESS");
-                            pw.flush();
+                    } else {
+                        File file = new File("hashmap.txt");
+                        ArrayList<String> database = new ArrayList<>();
+                        if(file.exists()) {
+                            Scanner myReader = null;
+                            try {
+                                myReader = new Scanner(file);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                            while (myReader.hasNextLine()) {
+                                s = myReader.nextLine();
+                                String[] result = s.split(" ");
+                                if(result[0].equals(mate)) {
+                                    pw.println("SUCCESS");
+                                    pw.flush();
+                                    break;
+                                }
+                                else if (!myReader.hasNextLine()) {
+                                    pw.println("FAILURE");
+                                    pw.flush();
+                                    s = null;
+                                }
+                            }
                         }
-                        */
-                        else {
-                            pw.println("FAILURE");
-                            pw.flush();
                         }
                     }
                 }
@@ -175,9 +211,31 @@ public class GitFlockClientManager implements Runnable {
                 Al messaggio protocollare "MSG" corrisponde l'inserimento del messaggio fornito dall'utente nell'arraylist
                 di messaggi del destinatario, corredata di data e ora di invio.
                  */
-                synchronized (users) {
-                    String msg = msg_scanner.nextLine();
-                    this.users.get(mate).addmsg("["+formatter.format(date)+"] "+username+": "+msg);
+                String msg = msg_scanner.nextLine();
+                if (s==null) {
+                    synchronized (users) {
+                        this.users.get(mate).addmsg("["+formatter.format(date)+"] "+username+": "+msg);
+                }
+                } else {
+                    String[] result = s.split(" ");
+                    try {
+                        Socket remote = new Socket(result[2], Integer.parseInt(result[1]));
+                        opw = new PrintWriter(remote.getOutputStream());
+                        opw.println("SERMSG "+mate+" ["+formatter.format(date)+"] "+username+": "+msg);
+                        opw.flush();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+            else if (cmd.equals("SERMSG")) {
+                String receiver = msg_scanner.next();
+                String remmsg = msg_scanner.nextLine();
+                try {
+                    this.users.get(receiver).addmsg(remmsg);
+                } catch (Exception e) {
+                    break;
                 }
             }
             else if (cmd.equals("QUIT")) {

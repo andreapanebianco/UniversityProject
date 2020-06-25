@@ -5,11 +5,8 @@ import java.util.Scanner;
 
 public class GitFlockClient {
     Socket socket;
-    Socket outsocket;
-    private String address1;
-    private int port1;
-    private String address2;
-    private int port2;
+    private String address;
+    private int port;
 
     /*
     Il programma sfrutta l'inserimento di due parametri (indirizzo e porta) per aprire il socket destinato al client
@@ -18,38 +15,33 @@ public class GitFlockClient {
 
     public static void main(String args[]) {
 
-        if (args.length!=4)  {
-            System.out.println("Usage: java GitFlockClient <address1> <port1> <address2> <port2>");
+        if (args.length!=2)  {
+            System.out.println("Usage: java GitFlockClient <address> <port>");
             return;
         }
 
-        GitFlockClient client = new GitFlockClient(args[0], Integer.parseInt(args[1]), args[2], Integer.parseInt(args[3]));
+        GitFlockClient client = new GitFlockClient(args[0], Integer.parseInt(args[1]));
         client.start();
     }
 
     //I valori appena inseriti vengono associati al client da servire.
 
-    public GitFlockClient(String address1, int port1, String address2, int port2) {
-        this.address1 = address1;
-        this.port1 = port1;
-        this.address2 = address2;
-        this.port2 = port2;
-
+    public GitFlockClient(String address, int port) {
+        this.address = address;
+        this.port = port;
     }
 
     public void start() {
-        System.out.println("Starting Client connection to "+address1+": "+port1);
-        System.out.println("Starting Client connection to "+address2+": "+port2);
+        System.out.println("Starting Client connection to "+address+": "+port);
+
         /*
         Ha dunque inizio la creazione del socket. Vengono inoltre creati degli scanner e dei printwriter destinati
         alla raccolta degli input dell'utente e alla comunicazione protocollare tra client e rispettivo CM.
          */
 
         try {
-            socket = new Socket(address1,port1);
-            outsocket = new Socket(address2,port2);
-            System.out.println("Started Client connection to " +address1+ ": " +port1);
-            System.out.println("Started Client connection to " +address2+ ": " +port2);
+            socket = new Socket(address,port);
+            System.out.println("Started Client connection to " +address+ ": " +port);
 
             // Il seguente printwriter consentirà la comunicazione protocollare indirizzata al server e inoltrata al CM.
             PrintWriter pw = new PrintWriter(socket.getOutputStream());
