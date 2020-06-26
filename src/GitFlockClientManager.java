@@ -87,6 +87,11 @@ public class GitFlockClientManager implements Runnable {
                 p.setSurname(surname);
                 p.setUsername(username);
                 users.put(username, p);
+                /*
+                VER 2.0: L'utente che esegue il login è adesso inserito anche in un file di testo che svolge il ruolo di
+                database per tutti i server; ciascun utente è memorizzato nel file tramite il proprio username, l'indirizzo
+                e la porta del server cui è collegato.
+                 */
                 File file = new File("hashmap.txt");
                 ArrayList<String> database = new ArrayList<>();
                 if(file.exists()) {
@@ -114,14 +119,46 @@ public class GitFlockClientManager implements Runnable {
                 pw.println("ADD_OK");
                 pw.flush();
             }
-            else if (cmd.equals("REMOVE")){
+            else if (cmd.equals("REMOVE")) {
                 /*
                 Al messaggio protocollare "REMOVE" corrisponde la rimozione dell'oggetto utente dall'hashmap comune,
                 tramite l'utilizzo dello username come key.
                  */
                 System.out.println("Executing command REMOVE");
-                System.out.println("Username to remove: " +username);
+                System.out.println("Username to remove: " + username);
                 users.remove(username);
+                /*
+                VER 2.0: Il messaggio protocollare "REMOVE" ha adesso anche la responsabilità di rimuovere la riga corrispondente
+                all'utente che esegue il logout anche dal file di testo.
+                 */
+                File updated = new File("updated.txt");
+                File file = new File("hashmap.txt");
+                if (file.exists()) {
+                    Scanner myReader = null;
+                    try {
+                        myReader = new Scanner(file);
+                        BufferedWriter writer = new BufferedWriter(new FileWriter(updated));
+                        while (myReader.hasNextLine()) {
+                            s = myReader.nextLine();
+                            String[] result = s.split(" ");
+                            if (!result[0].equals(username)) {
+                                writer.write(s);
+                                writer.newLine();
+                            }
+                        }
+                        writer.close();
+                        if (file.delete()) {
+                            if(!updated.renameTo(file)) {
+                                throw new IOException("Could not rename the file");
+                            }
+                        }
+                        else throw new IOException("Could not delete the original file");
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
             else if(cmd.equals("CHECK")){
                 /*
@@ -178,7 +215,13 @@ public class GitFlockClientManager implements Runnable {
                     if (this.users.containsKey(mate)) {
                         pw.println("SUCCESS");
                         pw.flush();
-                    } else {
+                    }
+                    /*
+                    VER 2.0: GitFlock non conclude la propria ricerca del destinatario nell'hashmap del solo server cui
+                    l'utente è collegato; nel caso in cui il destinatario non sia collegato al medesimo server del mittente,
+                    esso verrà ricercato all'interno del database, ed il messaggio eventualmente ivi inoltrato.
+                    */
+                    else {
                         File file = new File("hashmap.txt");
                         ArrayList<String> database = new ArrayList<>();
                         if(file.exists()) {
@@ -214,14 +257,19 @@ public class GitFlockClientManager implements Runnable {
                 String msg = msg_scanner.nextLine();
                 if (s==null) {
                     synchronized (users) {
-                        this.users.get(mate).addmsg("["+formatter.format(date)+"] "+username+": "+msg);
+                        this.users.get(mate).addmsg(" ["+formatter.format(date)+"] "+username+": "+msg);
                 }
-                } else {
+                }
+                /*
+                VER 2.0: Nel caso in cui il destinatario sia collegato ad un server diverso da quello del mittente, il
+                nuovo comando protocollare "SERMSG" inoltrerà il messaggio tramite un socket aperto ad hoc.
+                */
+                else {
                     String[] result = s.split(" ");
                     try {
                         Socket remote = new Socket(result[2], Integer.parseInt(result[1]));
                         opw = new PrintWriter(remote.getOutputStream());
-                        opw.println("SERMSG "+mate+" ["+formatter.format(date)+"] "+username+": "+msg);
+                        opw.println("SERMSG "+mate+" "+"["+formatter.format(date)+"] "+username+": "+msg);
                         opw.flush();
                     } catch (IOException e) {
                         e.printStackTrace();
