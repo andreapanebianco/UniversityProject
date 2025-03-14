@@ -1,15 +1,23 @@
-# GitFlock: a java-based social network
+# GitFlock: A Java-Based Social Network
 
-GitFlock allows users from all over the world to connect to the same platform, see each other and start a chat in a mailbox-like fashion.
+GitFlock is a Java-based social networking platform that enables users worldwide to connect, see each other, and communicate through a mailbox-style chat system.
 
-GitFlock allows the client to establish a connection to the server by inputing the address and port at startup; it then lets the user choose between two options, "connect" and "about".
-The first option prompts a login session, letting the user input their name, surname, age and a username to be known by (and referred to) on the platform; GitFlock won't allow users younger than 14 years old to login.
-The system implements a concurrent hashmap to store "User" objects in the server, removing them when they log out; logout doesn't make the client leave the app, so another login with different (or same) credentials is possible.
-The second option prints information about the app and instructions on how to use it.
+## Features
 
-Logging onto the platform prompts a sub-menu, followed by a notification system which tells the user if new messages have been received while "available".
-The first option of the sub-menu allows the user to check a list of all online users; the list is in reality a cycled print of all "User" objects present at that time in the concurrent hashmap.
-The second option of the sub-menu allows the user to check a log of all received messages during the same session (together with time and date of said messages), and to input the username of another person. Inputing a valid username will allow the user to send multiple messages, until "QUIT" is inputed. A user may only contact another online client.
-The third and final option of the sub-menu allows the user to log out of the system, removing them from the concurrent hashmap and making them "unavailable" to other users; the user is sent back to the main menu after logging out.
-
-GitFlock was created for people older than 14, with the intent of providing an intuitive and easy-to-use platform for them to chat on while ensuring a moderate degree of privacy.
+- **Server Connection:** Users can establish a connection to the GitFlock server by providing the address and port at startup.
+- **User Authentication:**
+  - Users must be at least 14 years old to register.
+  - During login, users provide their name, surname, age, and a unique username.
+  - The system stores active users in a concurrent hashmap and removes them upon logout.
+- **User Menu:**
+  - **Connect:** Initiates the login session.
+  - **About:** Displays information and usage instructions.
+- **Sub-Menu After Login:**
+  - **Check Online Users:** Displays a list of all currently connected users.
+  - **Messaging System:**
+    - View all received messages (with timestamps) during the session.
+    - Send messages to any online user by inputting their username.
+    - Users can send multiple messages until they type "QUIT".
+  - **Logout:** Removes the user from the concurrent hashmap, making them unavailable to others. The user is then redirected to the main menu.
+- **Notification System:** Alerts users about new messages received while they were available.
+- **Privacy Considerations:** Ensures a moderate level of privacy while maintaining an intuitive and user-friendly experience.
