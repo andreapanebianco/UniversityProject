@@ -1,4 +1,4 @@
-# GitFlock is a java-based social network
+# GitFlock: a java-based social network
 
 GitFlock allows users from all over the world to connect to the same platform, see each other and start a chat in a mailbox-like fashion.
 
